@@ -1,0 +1,10 @@
+# Mac OS
+**/.DS_Store
+
+# IDEA
+**/.idea/
+**/build/
+
+# Gradle
+**/.gradle/
+**/out/
