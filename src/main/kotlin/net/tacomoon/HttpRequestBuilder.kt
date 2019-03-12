@@ -26,17 +26,17 @@ class HttpRequestBuilder {
     }
 
     fun header(header: String, value: String) {
-        check(header.isNotBlank()) { "param should not be empty" }
+        check(header.isNotBlank()) { "'header' should not be empty" }
         headers[header] = value
     }
 
     fun param(param: String, value: String) {
-        check(param.isNotBlank()) { "param should not be empty" }
+        check(param.isNotBlank()) { "'param' should not be empty" }
         params[param] = value
     }
 
     fun get(url: String) {
-        check(url.isNotBlank()) { "url should not be blank" }
+        check(url.isNotBlank()) { "'url' should not be blank" }
         request = HttpGet(url)
     }
 
