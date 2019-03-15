@@ -37,7 +37,7 @@ internal class HttpRequestBuilderTest {
     @ParameterizedTest
     @MethodSource("plain url provider")
     fun `plain url request`(data: RequestData) {
-        buildHttpRequest {
+        request {
             client(client)
             get(data.url)
         }
@@ -52,7 +52,7 @@ internal class HttpRequestBuilderTest {
     @ParameterizedTest
     @MethodSource("url and headers provider")
     fun `headers in request`(data: RequestData) {
-        buildHttpRequest {
+        request {
             client(client)
             get(data.url)
             for ((header, value) in data.headers) {
@@ -73,7 +73,7 @@ internal class HttpRequestBuilderTest {
     @ParameterizedTest
     @MethodSource("url and params provider")
     fun `params in request`(data: RequestData) {
-        buildHttpRequest {
+        request {
             client(client)
             get(data.url)
             for ((param, value) in data.params) {

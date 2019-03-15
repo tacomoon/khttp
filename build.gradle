@@ -20,7 +20,7 @@ buildscript {
 }
 
 group 'net.tacomoon'
-version '0.1'
+version '0.2'
 
 apply plugin: 'kotlin'
 
@@ -33,6 +33,7 @@ dependencies {
 
     compile "org.apache.httpcomponents:httpclient:$httpclient_version"
     compile "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
 
     // Tests
     testCompile "io.mockk:mockk:$mockk_version"

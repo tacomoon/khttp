@@ -1,6 +1,5 @@
 package net.tacomoon
 
-import net.tacomoon.exception.HttpRequestException
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.client.utils.URIBuilder
@@ -40,23 +39,20 @@ class HttpRequestBuilder {
         request = HttpGet(url)
     }
 
-    internal fun execute(): String {
-        build()
+    internal fun executeRequest(): Response {
+        buildRequest()
 
         client.execute(request).use { response ->
             val url: String = request.uri.toASCIIString()
             val code: Int = response.statusLine.statusCode
+            val body: String = if (response.entity == null) "" else EntityUtils.toString(response.entity)
 
-            if (response.statusLine.statusCode / 100 != 2) {
-                throw HttpRequestException("Request to $url failed with code: $code,\nreason: ${response.statusLine.reasonPhrase}")
-            }
-
-            return EntityUtils.toString(response.entity)
+            return Response(url, code, body)
         }
     }
 
-    private fun build() {
-        checkNotNull(request) { "http request not specified" }
+    private fun buildRequest() {
+        checkNotNull(request) { "http method not specified" }
 
         headers.forEach { (header, value) ->
             request.addHeader(header, value)
@@ -71,8 +67,8 @@ class HttpRequestBuilder {
     }
 }
 
-fun buildHttpRequest(init: HttpRequestBuilder.() -> Unit): String {
-    return HttpRequestBuilder().apply(init).execute()
+fun request(init: HttpRequestBuilder.() -> Unit): Response {
+    return HttpRequestBuilder().apply(init).executeRequest()
 }
 
 private fun buildURI(uri: URI, init: URIBuilder.() -> Unit): URI {
