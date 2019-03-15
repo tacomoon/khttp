@@ -1,6 +1,9 @@
 package net.tacomoon
 
+import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpPut
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.impl.client.CloseableHttpClient
@@ -37,6 +40,21 @@ class HttpRequestBuilder {
     fun get(url: String) {
         check(url.isNotBlank()) { "'url' should not be blank" }
         request = HttpGet(url)
+    }
+
+    fun post(url: String) {
+        check(url.isNotBlank()) { "'url' should not be blank" }
+        request = HttpPost(url)
+    }
+
+    fun put(url: String) {
+        check(url.isNotBlank()) { "'url' should not be blank" }
+        request = HttpPut(url)
+    }
+
+    fun delete(url: String) {
+        check(url.isNotBlank()) { "'url' should not be blank" }
+        request = HttpDelete(url)
     }
 
     internal fun executeRequest(): Response {

@@ -1,6 +1,6 @@
 # Kotlin DSL for Apache HTTP Client
 
-Library provide DSL for building simple HTTP requests over Apache client.
+Library provide DSL for building simple HTTP requests over Apache HTTP client.
 
 ### Examples
 Building request:
@@ -15,7 +15,7 @@ val response: Response = buildHttpRequest {
 Working with response:
 ```kotlin
 val response: Response = request {
-    get("https://randomuser.me/api/")
+    get("https://randomuser.me/api/?gender=female")
 }
 
 println("Request url ${response.url} done with code ${response.code} and body ${response.body}")
@@ -24,13 +24,8 @@ println("Request url ${response.url} done with code ${response.code} and body ${
 Parsing results:
 ```kotlin
 val response: Response = request {
-    get("https://randomuser.me/api/?gender=female")
+    post("https://example.com/api/create-something")
 }
 
-val results: RandomUserResults = response.parse()
+val result: ResultModel = response.parse()
 ```
-
-### Plan
-- ~~Extend return value~~
-- ~~Parse response body to models~~
-- Support most common request types: GET, POST, PUT, DELETE
