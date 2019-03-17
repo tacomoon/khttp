@@ -7,6 +7,10 @@ import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
 import org.apache.http.client.methods.CloseableHttpResponse
+import org.apache.http.client.methods.HttpDelete
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpPut
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
@@ -14,6 +18,7 @@ import org.apache.http.impl.client.HttpClients
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
@@ -22,16 +27,78 @@ internal class HttpRequestBuilderTest {
 
     private val client: CloseableHttpClient = spyk(HttpClients.createDefault())
     private val slot: CapturingSlot<HttpRequestBase> = slot()
-    private val okResponse: CloseableHttpResponse = mockk()
+    private lateinit var response: CloseableHttpResponse
 
     @BeforeEach
     internal fun beforeEach() {
-        every { okResponse.statusLine.statusCode } returns 200
-        every { okResponse.statusLine.reasonPhrase } returns ""
-        every { okResponse.entity } returns StringEntity("")
-        every { okResponse.close() } answers {}
+        response = mockResponse()
 
-        every { client.execute(capture(slot)) } returns okResponse
+        every { client.execute(capture(slot)) } returns response
+    }
+
+    @Test
+    fun `build get request`() {
+        request {
+            client(client)
+            get("https://example.com")
+        }
+
+        assertThat(slot.captured)
+                .`as`("Expecting http method to be GET")
+                .isInstanceOf(HttpGet::class.java)
+    }
+
+    @Test
+    fun `build post request`() {
+        request {
+            client(client)
+            post("https://example.com")
+        }
+
+        assertThat(slot.captured)
+                .`as`("Expecting http method to be POST")
+                .isInstanceOf(HttpPost::class.java)
+    }
+
+    @Test
+    fun `build put request`() {
+        request {
+            client(client)
+            put("https://example.com")
+        }
+
+        assertThat(slot.captured)
+                .`as`("Expecting http method to be PUT")
+                .isInstanceOf(HttpPut::class.java)
+    }
+
+    @Test
+    fun `build delete request`() {
+        request {
+            client(client)
+            delete("https://example.com")
+        }
+
+        assertThat(slot.captured)
+                .`as`("Expecting http method to be DELETE")
+                .isInstanceOf(HttpDelete::class.java)
+    }
+
+    @ParameterizedTest
+    @MethodSource("response provider")
+    fun `response model`(expected: ResponseData) {
+        every { client.execute(capture(slot)) } answers { mockResponse(expected) }
+
+        val actual: HttpResponse = request {
+            client(client)
+            get("https://example.com")
+        }
+
+        SoftAssertions.assertSoftly { softly ->
+            softly.assertThat(actual.code).isEqualTo(expected.code)
+            softly.assertThat(actual.body).isEqualTo(expected.body)
+        }
+
     }
 
     @ParameterizedTest
@@ -43,7 +110,10 @@ internal class HttpRequestBuilderTest {
         }
 
         verify { client.execute(any()) }
-        verify { okResponse.close() }
+        verify { response.close() }
+
+        assertThat(slot.captured)
+                .isInstanceOf(HttpGet::class.java)
 
         assertThat(slot.captured.uri.toASCIIString())
                 .isEqualTo(data.url)
@@ -61,7 +131,7 @@ internal class HttpRequestBuilderTest {
         }
 
         verify { client.execute(any()) }
-        verify { okResponse.close() }
+        verify { response.close() }
 
         val actualHeadersMap: Map<String, String> = slot.captured.allHeaders
                 .associateBy({ it.name }, { it.value })
@@ -82,7 +152,7 @@ internal class HttpRequestBuilderTest {
         }
 
         verify { client.execute(any()) }
-        verify { okResponse.close() }
+        verify { response.close() }
 
         SoftAssertions.assertSoftly { softly ->
             for ((param, value) in data.params) {
@@ -92,10 +162,30 @@ internal class HttpRequestBuilderTest {
         }
     }
 
+    data class ResponseData(val code: Int = 200, val body: String = "")
+
     data class RequestData(val url: String, val headers: Map<String, String>, val params: Map<String, String>)
+
+    private fun mockResponse(response: ResponseData = ResponseData()): CloseableHttpResponse {
+        val mock: CloseableHttpResponse = mockk()
+
+        every { mock.statusLine.statusCode } returns response.code
+        every { mock.entity } returns StringEntity(response.body)
+        every { mock.close() } answers {}
+
+        return mock
+    }
 
     @Suppress("unused")
     private companion object {
+        @JvmStatic
+        fun `response provider`(): Stream<ResponseData> = Stream.of(
+                ResponseData(),
+                ResponseData(code = 504),
+                ResponseData(body = "{status:\"OK\"}"),
+                ResponseData(code = 400, body = "{}")
+        )
+
         @JvmStatic
         fun `plain url provider`(): Stream<RequestData> = Stream.of(
                 RequestData("https://google.com", mapOf(), mapOf()),

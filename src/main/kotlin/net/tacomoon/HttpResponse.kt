@@ -8,7 +8,7 @@ object ResponseParser {
     val mapper: ObjectMapper = ObjectMapper().registerKotlinModule()
 }
 
-data class Response(val url: String, val code: Int, val body: String) {
+data class HttpResponse(val url: String, val code: Int, val body: String) {
     inline fun <reified T> parse(): T {
         return ResponseParser.mapper.readValue(body)
     }

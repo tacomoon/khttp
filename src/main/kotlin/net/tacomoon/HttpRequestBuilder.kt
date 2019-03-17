@@ -57,7 +57,7 @@ class HttpRequestBuilder {
         request = HttpDelete(url)
     }
 
-    internal fun executeRequest(): Response {
+    internal fun executeRequest(): HttpResponse {
         buildRequest()
 
         client.execute(request).use { response ->
@@ -65,7 +65,7 @@ class HttpRequestBuilder {
             val code: Int = response.statusLine.statusCode
             val body: String = if (response.entity == null) "" else EntityUtils.toString(response.entity)
 
-            return Response(url, code, body)
+            return HttpResponse(url, code, body)
         }
     }
 
@@ -85,7 +85,7 @@ class HttpRequestBuilder {
     }
 }
 
-fun request(init: HttpRequestBuilder.() -> Unit): Response {
+fun request(init: HttpRequestBuilder.() -> Unit): HttpResponse {
     return HttpRequestBuilder().apply(init).executeRequest()
 }
 
