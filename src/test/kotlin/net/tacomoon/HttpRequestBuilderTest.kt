@@ -87,7 +87,7 @@ internal class HttpRequestBuilderTest {
     @ParameterizedTest
     @MethodSource("response provider")
     fun `response model`(expected: ResponseData) {
-        every { client.execute(capture(slot)) } answers { mockResponse(expected) }
+        every { client.execute(capture(slot)) } answers { mockResponse(expected.code, expected.body) }
 
         val actual: HttpResponse = request {
             client(client)
@@ -162,28 +162,42 @@ internal class HttpRequestBuilderTest {
         }
     }
 
-    data class ResponseData(val code: Int = 200, val body: String = "")
+    @ParameterizedTest
+    @MethodSource("serializable models provider")
+    fun `parse response`(data: SerializationData) {
+        every { client.execute(capture(slot)) } answers { mockResponse(200, data.json) }
 
-    data class RequestData(val url: String, val headers: Map<String, String>, val params: Map<String, String>)
+        val response: HttpResponse = request {
+            client(client)
+            get("https://example.com")
+        }
 
-    private fun mockResponse(response: ResponseData = ResponseData()): CloseableHttpResponse {
-        val mock: CloseableHttpResponse = mockk()
+        val actual: RequestData = response.parse()
 
-        every { mock.statusLine.statusCode } returns response.code
-        every { mock.entity } returns StringEntity(response.body)
-        every { mock.close() } answers {}
-
-        return mock
+        assertThat(actual).isEqualTo(data.model)
     }
 
     @Suppress("unused")
-    private companion object {
+    companion object {
+        data class ResponseData(val code: Int, val body: String)
+        data class RequestData(val url: String, val headers: Map<String, String>, val params: Map<String, String>)
+        data class SerializationData(val model: Any, val json: String)
+
+        private fun mockResponse(code: Int = 200, body: String = ""): CloseableHttpResponse {
+            val mock: CloseableHttpResponse = mockk()
+
+            every { mock.statusLine.statusCode } returns code
+            every { mock.entity } returns StringEntity(body)
+            every { mock.close() } answers {}
+
+            return mock
+        }
+
         @JvmStatic
         fun `response provider`(): Stream<ResponseData> = Stream.of(
-                ResponseData(),
-                ResponseData(code = 504),
-                ResponseData(body = "{status:\"OK\"}"),
-                ResponseData(code = 400, body = "{}")
+                ResponseData(504, ""),
+                ResponseData(400, "{}"),
+                ResponseData(200, "{status:\"OK\"}")
         )
 
         @JvmStatic
@@ -201,6 +215,22 @@ internal class HttpRequestBuilderTest {
         fun `url and params provider`(): Stream<RequestData> = Stream.of(
                 RequestData("https://google.com/search", mapOf(), mapOf("q" to "test")),
                 RequestData("https://google.com/search", mapOf(), mapOf("newwindow" to "1", "q" to "test"))
+        )
+
+        @JvmStatic
+        fun `serializable models provider`(): Stream<SerializationData> = Stream.of(
+                SerializationData(
+                        RequestData("https://google.com", mapOf(), mapOf()),
+                        """{"url":"https://google.com","headers":{},"params":{}}"""
+                ),
+                SerializationData(
+                        RequestData("https://google.com", mapOf("content-type" to "text/html"), mapOf("q" to "test")),
+                        """{"url":"https://google.com","headers":{"content-type":"text/html"},"params":{"q":"test"}}"""
+                ),
+                SerializationData(
+                        RequestData("https://google.com", mapOf("content-type" to "text/html"), mapOf("newwindow" to "1", "q" to "test")),
+                        """{"url":"https://google.com","headers":{"content-type":"text/html"},"params":{"newwindow":"1","q":"test"}}"""
+                )
         )
     }
 }
