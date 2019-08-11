@@ -1,6 +1,7 @@
 # Kotlin DSL for Apache HTTP Client
 
-Library provide DSL for simple building and executing HTTP requests over Apache HTTP client.
+Library provide DSL for simple building and executing HTTP requests over Apache HTTP client.  
+You are welcome to use the library and contribute into it.
 
 ### Examples
 Simply execute request:
@@ -10,7 +11,7 @@ get("http://google.ru")
 
 Add headers or body to request:
 ```kotlin
-post("https://yourapp.com/api/v1/u.sers") {
+post("https://yourapp.com/api/v1/users") {
     header("content-type", "application/json")
     entity("""{"user":"admin"}""")
 }
