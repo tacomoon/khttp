@@ -11,8 +11,8 @@ object RequestExecutor {
     val defaultClient: CloseableHttpClient = HttpClients.createDefault()
 }
 
-fun HttpRequestBase.execute(): HttpResponse {
-    RequestExecutor.defaultClient.execute(this).use { response: CloseableHttpResponse ->
+fun HttpRequestBase.execute(client: CloseableHttpClient): HttpResponse {
+    client.execute(this).use { response: CloseableHttpResponse ->
         val url: String = uri.toASCIIString()
         val code: Int = response.statusLine.statusCode
         val body: String = if (response.entity == null) "" else EntityUtils.toString(response.entity)
