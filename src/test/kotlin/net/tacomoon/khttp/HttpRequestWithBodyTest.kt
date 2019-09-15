@@ -4,8 +4,8 @@ import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import net.tacomoon.khttp.utils.EntityMapper
-import net.tacomoon.khttp.utils.post
+import net.tacomoon.khttp.builder.post
+import net.tacomoon.khttp.mapper.EntityMapper
 import org.apache.http.HttpEntity
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase
 import org.apache.http.entity.StringEntity

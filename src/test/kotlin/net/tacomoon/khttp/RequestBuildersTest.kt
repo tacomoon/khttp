@@ -4,10 +4,10 @@ import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import net.tacomoon.khttp.utils.delete
-import net.tacomoon.khttp.utils.get
-import net.tacomoon.khttp.utils.post
-import net.tacomoon.khttp.utils.put
+import net.tacomoon.khttp.builder.delete
+import net.tacomoon.khttp.builder.get
+import net.tacomoon.khttp.builder.post
+import net.tacomoon.khttp.builder.put
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost

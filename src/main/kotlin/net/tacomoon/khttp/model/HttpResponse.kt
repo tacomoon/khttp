@@ -1,8 +1,7 @@
-package net.tacomoon.khttp.models
+package net.tacomoon.khttp.model
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import net.tacomoon.khttp.utils.EntityMapper
+import net.tacomoon.khttp.mapper.EntityMapper
 
 data class HttpResponse(val url: String, val code: Int, val body: String) {
     /**
@@ -10,6 +9,6 @@ data class HttpResponse(val url: String, val code: Int, val body: String) {
      * Throws same exception as [ObjectMapper.readValue]
      */
     inline fun <reified T> parse(): T {
-        return EntityMapper.mapper.readValue(body)
+        return EntityMapper.deserialize(body)
     }
 }

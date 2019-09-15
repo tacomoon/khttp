@@ -1,15 +1,14 @@
-package net.tacomoon.khttp.models
+package net.tacomoon.khttp.model
 
-import net.tacomoon.khttp.utils.EntityMapper
+import net.tacomoon.khttp.mapper.EntityMapper
 import org.apache.http.Header
 import org.apache.http.HttpEntity
-import org.apache.http.HttpEntityEnclosingRequest
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.entity.StringEntity
 import org.apache.http.message.BasicHeader
 
-sealed class BaseHttpRequest(protected val request: HttpRequestBase) {
+sealed class BaseHttpRequest<T : HttpRequestBase>(protected val request: T) {
     private val headers: MutableList<Header> = mutableListOf()
 
     fun header(header: Header) {
@@ -27,19 +26,21 @@ sealed class BaseHttpRequest(protected val request: HttpRequestBase) {
     }
 }
 
-class HttpRequest(request: HttpRequestBase) : BaseHttpRequest(request)
+class HttpRequest(request: HttpRequestBase)
+    : BaseHttpRequest<HttpRequestBase>(request)
 
-class HttpRequestEnclosingEntity(request: HttpEntityEnclosingRequestBase) : BaseHttpRequest(request) {
+class HttpRequestEnclosingEntity(request: HttpEntityEnclosingRequestBase)
+    : BaseHttpRequest<HttpEntityEnclosingRequestBase>(request) {
 
     fun entity(entity: HttpEntity) {
-        (request as HttpEntityEnclosingRequest).entity = entity
+        request.entity = entity
     }
 
     fun entity(entity: String) {
-        (request as HttpEntityEnclosingRequest).entity = StringEntity(entity)
+        entity(StringEntity(entity))
     }
 
     fun <T> entity(entity: T) {
-        entity(EntityMapper.mapper.writeValueAsString(entity))
+        entity(EntityMapper.serialize(entity))
     }
 }

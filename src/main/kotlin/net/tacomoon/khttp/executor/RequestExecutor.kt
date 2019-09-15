@@ -1,6 +1,6 @@
-package net.tacomoon.khttp.utils
+package net.tacomoon.khttp.executor
 
-import net.tacomoon.khttp.models.HttpResponse
+import net.tacomoon.khttp.model.HttpResponse
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.impl.client.CloseableHttpClient

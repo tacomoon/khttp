@@ -4,7 +4,7 @@ import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import net.tacomoon.khttp.utils.get
+import net.tacomoon.khttp.builder.get
 import org.apache.http.Header
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.impl.client.CloseableHttpClient

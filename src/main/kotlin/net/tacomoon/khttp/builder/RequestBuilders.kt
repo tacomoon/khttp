@@ -1,8 +1,10 @@
-package net.tacomoon.khttp.utils
+package net.tacomoon.khttp.builder
 
-import net.tacomoon.khttp.models.HttpRequest
-import net.tacomoon.khttp.models.HttpRequestEnclosingEntity
-import net.tacomoon.khttp.models.HttpResponse
+import net.tacomoon.khttp.executor.RequestExecutor
+import net.tacomoon.khttp.executor.execute
+import net.tacomoon.khttp.model.HttpRequest
+import net.tacomoon.khttp.model.HttpRequestEnclosingEntity
+import net.tacomoon.khttp.model.HttpResponse
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
