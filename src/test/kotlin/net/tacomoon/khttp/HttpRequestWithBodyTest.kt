@@ -6,6 +6,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import net.tacomoon.khttp.builder.post
 import net.tacomoon.khttp.mapper.EntityMapper
+import net.tacomoon.khttp.utils.mockResponse
 import org.apache.http.HttpEntity
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase
 import org.apache.http.entity.StringEntity
@@ -23,7 +24,7 @@ class HttpRequestWithBodyTest {
 
     @BeforeEach
     fun beforeEach() {
-        every { client.execute(capture(requestSlot)) } answers { mockResponse() }
+        every { client.execute(capture(requestSlot)) } answers { mockResponse(200, "") }
     }
 
     @ParameterizedTest

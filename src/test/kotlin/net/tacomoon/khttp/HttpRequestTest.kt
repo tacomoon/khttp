@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import net.tacomoon.khttp.builder.get
+import net.tacomoon.khttp.utils.mockResponse
 import org.apache.http.Header
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.impl.client.CloseableHttpClient
@@ -22,7 +23,7 @@ internal class HttpRequestTest {
 
     @BeforeEach
     fun beforeEach() {
-        every { client.execute(capture(requestSlot)) } answers { mockResponse() }
+        every { client.execute(capture(requestSlot)) } answers { mockResponse(200, "") }
     }
 
     @ParameterizedTest

@@ -8,6 +8,7 @@ import net.tacomoon.khttp.builder.delete
 import net.tacomoon.khttp.builder.get
 import net.tacomoon.khttp.builder.post
 import net.tacomoon.khttp.builder.put
+import net.tacomoon.khttp.utils.mockResponse
 import org.apache.http.client.methods.HttpDelete
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
@@ -24,7 +25,7 @@ internal class RequestBuildersTest {
 
     @BeforeEach
     fun beforeEach() {
-        every { client.execute(capture(requestSlot)) } answers { mockResponse() }
+        every { client.execute(capture(requestSlot)) } answers { mockResponse(200, "") }
     }
 
     @Test
