@@ -12,7 +12,9 @@ before_script:
 
 build:
   stage: build
-  script: gradle --build-cache build
+  only:
+    - master
+  script: gradle --build-cache clean assemble
   artifacts:
     paths:
       - build/libs/*.jar
@@ -20,3 +22,7 @@ build:
 test:
   stage: test
   script: gradle check
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cache/
