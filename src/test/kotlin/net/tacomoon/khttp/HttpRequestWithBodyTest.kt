@@ -12,7 +12,7 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.util.EntityUtils
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -34,7 +34,7 @@ class HttpRequestWithBodyTest {
             entity(expected)
         }
 
-        Assertions.assertThat(requestSlot.captured.entity)
+        assertThat(requestSlot.captured.entity)
                 .`as`("Expecting HTTP request to contains body")
                 .isEqualTo(expected)
     }
@@ -46,7 +46,7 @@ class HttpRequestWithBodyTest {
             entity(expected)
         }
 
-        Assertions.assertThat(requestSlot.captured.entity)
+        assertThat(requestSlot.captured.entity)
                 .`as`("Expecting HTTP request to contains body")
                 .extracting { EntityUtils.toString(it) }
                 .isEqualTo(expected)
@@ -59,10 +59,10 @@ class HttpRequestWithBodyTest {
             entity(expected)
         }
 
-        Assertions.assertThat(requestSlot.captured.entity)
+        assertThat(requestSlot.captured.entity)
                 .`as`("Expecting HTTP request to contains body")
                 .extracting { EntityUtils.toString(it) }
-                .extracting { EntityMapper.mapper.readValue(it as String, TestBody::class.java) }
+                .extracting { EntityMapper.deserialize<TestBody>(it as String) }
                 .isEqualTo(expected)
     }
 

@@ -47,7 +47,7 @@ internal class HttpRequestTest {
 
         assertThat(requestSlot.captured.allHeaders)
                 .`as`("Expecting HTTP request to contains header")
-                .isNotEmpty
+                .hasSize(1)
                 .matches { it[0].name == expectedName }
                 .matches { it[0].value == expectedValue }
     }

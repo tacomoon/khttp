@@ -6,7 +6,7 @@ import net.tacomoon.khttp.mapper.EntityMapper
 data class HttpResponse(val url: String, val code: Int, val body: String) {
     /**
      * Invoke [ObjectMapper.readValue] for mapper configured in [EntityMapper.mapper]
-     * Throws same exception as [ObjectMapper.readValue]
+     * Throws same exceptions as [ObjectMapper.readValue]
      */
     inline fun <reified T> parse(): T {
         return EntityMapper.deserialize(body)

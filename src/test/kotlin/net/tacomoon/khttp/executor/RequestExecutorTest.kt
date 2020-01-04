@@ -38,11 +38,21 @@ internal class RequestExecutorTest {
     fun `response building`(request: HttpRequestBase, response: CloseableHttpResponse) {
         every { client.execute(any()) } returns response
 
-        val parsed: HttpResponse = request.execute(client)
+        val parsedResponse: HttpResponse = request.execute(client)
 
-        assertThat(parsed.url).isEqualTo(request.uri.toASCIIString())
-        assertThat(parsed.code).isEqualTo(response.statusLine.statusCode)
-        assertThat(parsed.body).isEqualTo(EntityUtils.toString(response.entity))
+        assertThat(parsedResponse.url).isEqualTo(request.uri.toASCIIString())
+        assertThat(parsedResponse.code).isEqualTo(response.statusLine.statusCode)
+        assertThat(parsedResponse.body).isEqualTo(EntityUtils.toString(response.entity))
+    }
+
+    @ParameterizedTest
+    @MethodSource("request provider")
+    fun `null body response parsed as empty string`(request: HttpRequestBase) {
+        every { client.execute(any()) } answers { mockResponse(body = null) }
+
+        val parsedResponse: HttpResponse = request.execute(client)
+
+        assertThat(parsedResponse.body).isEqualTo("");
     }
 
     @Suppress("unused")
